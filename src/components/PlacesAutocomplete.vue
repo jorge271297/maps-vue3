@@ -20,6 +20,7 @@
       });
 
       let data = ref({
+        location: "",
         interior: 0,
         exteriror: 0,
         calle: "",
@@ -27,11 +28,14 @@
         municipio: "",
         estado: "",
         CP: 0,
+        latitude: 0,
+        longitude: 0,
       });
 
       let result_lat = ref(null);
       let result_lng = ref(null);
 
+      let location = ref(null);
       let interior = ref(null);
       let exteriror = ref(null);
       let calle = ref(null);
@@ -41,6 +45,7 @@
       let CP = ref(null);
 
       const clear = () => {
+        location.value = "";
         interior.value = "";
         exteriror.value = "";
         calle.value = "";
@@ -73,6 +78,7 @@
             clear();
             //guardar detalle
             var detalles = place.address_components;
+            location.value = place.formatted_address;
             for (let i = 0; i < detalles.length; i++) {
               var d = detalles[i];
               switch (d.types[0]) {
@@ -96,9 +102,23 @@
                   break;
               }
             }
-            emit("getLocation", "hola");
+
             result_lat.value = place.geometry.location.lat();
             result_lng.value = place.geometry.location.lng();
+
+            data.value = {
+              location: location.value,
+              interior: interior.value,
+              exteriror: exteriror.value,
+              calle: calle.value,
+              colonia: colonia.value,
+              municipio: municipio.value,
+              estado: estado.value,
+              CP: CP.value,
+              latitude: result_lat.value,
+              longitude: result_lng.value,
+            };
+            emit("getLocation", data.value);
           }
         );
       });
@@ -122,7 +142,7 @@
 <template>
   <div>
     <input id="map-input" :class="STYLECLASS" /> <button>h</button>
-    <ul>
+    <!--<ul>
       <li><input v-model="result_lat" type="text" /></li>
       <li><input v-model="result_lng" type="text" /></li>
       <li><input v-model="interior" type="text" /></li>
@@ -132,6 +152,6 @@
       <li><input v-model="municipio" type="text" /></li>
       <li><input v-model="estado" type="text" /></li>
       <li><input v-model="CP" type="text" /></li>
-    </ul>
+    </ul>-->
   </div>
 </template>
